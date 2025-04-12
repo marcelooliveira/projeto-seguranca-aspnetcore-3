@@ -5,6 +5,8 @@ using MedVoll.Web.Repositories;
 using MedVoll.Web.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using MedVoll.Web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,9 +21,13 @@ builder.Services.AddControllersWithViews(options =>
 var connectionString = builder.Configuration.GetConnectionString("SqliteConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(x => x.UseSqlite(connectionString));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+//    .AddRoles<IdentityRole>()
+//    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<VollMedUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders()
+    .AddSignInManager<SignInManager<VollMedUser>>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -79,6 +85,18 @@ builder.Services.AddAntiforgery(options =>
 });
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddHttpClient("ApiClient", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["WebApiBaseAddress"]!);
+});
+
+builder.Services.AddScoped<IApiClient, ApiClient>();
+
+builder.Services.AddSingleton<JwtTokenHandler>();
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddMvc();
 
 var app = builder.Build();
 
