@@ -398,3 +398,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/MedVoll.Identity.API/vollmed.db
+/MedVoll.Identity.API/vollmed.db-shm
+/MedVoll.Identity.API/vollmed.db-wal
