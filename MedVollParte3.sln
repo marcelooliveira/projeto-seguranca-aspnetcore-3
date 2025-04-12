@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35514.174
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedVoll.Web", "MedVoll.Web\MedVoll.Web.csproj", "{48B82E10-ED3E-4515-B95A-D6C9053A68AD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedVoll.WebAPI", "MedVoll.WebAPI\MedVoll.WebAPI.csproj", "{DB8ABA5A-E6F4-4404-A783-C5FAEE1CAD5D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedVoll.ServiceDefaults", "MedVoll.ServiceDefaults\MedVoll.ServiceDefaults.csproj", "{6BB03781-FA9A-4191-8E2B-FB04F2FAED71}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedVoll.Identity.API", "MedVoll.Identity.API\MedVoll.Identity.API.csproj", "{E6052EEE-6AAA-4D56-96A5-8E4769F04093}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedVoll.Web", "MedVoll.Web\MedVoll.Web.csproj", "{CBAAA12D-1346-4230-B913-5EBDDBF8840A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{48B82E10-ED3E-4515-B95A-D6C9053A68AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{48B82E10-ED3E-4515-B95A-D6C9053A68AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{48B82E10-ED3E-4515-B95A-D6C9053A68AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{48B82E10-ED3E-4515-B95A-D6C9053A68AD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DB8ABA5A-E6F4-4404-A783-C5FAEE1CAD5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DB8ABA5A-E6F4-4404-A783-C5FAEE1CAD5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB8ABA5A-E6F4-4404-A783-C5FAEE1CAD5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{E6052EEE-6AAA-4D56-96A5-8E4769F04093}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6052EEE-6AAA-4D56-96A5-8E4769F04093}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6052EEE-6AAA-4D56-96A5-8E4769F04093}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBAAA12D-1346-4230-B913-5EBDDBF8840A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBAAA12D-1346-4230-B913-5EBDDBF8840A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBAAA12D-1346-4230-B913-5EBDDBF8840A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBAAA12D-1346-4230-B913-5EBDDBF8840A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

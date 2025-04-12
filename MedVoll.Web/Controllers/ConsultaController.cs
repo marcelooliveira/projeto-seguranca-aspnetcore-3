@@ -1,122 +1,78 @@
 ﻿using MedVoll.Web.Dtos;
-using MedVoll.Web.Services;
+using MedVoll.Web.Exceptions;
+using MedVoll.Web.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
 
 namespace MedVoll.Web.Controllers
 {
-    [Authorize]
+    [Authorize()]
     [Route("consultas")]
     public class ConsultaController : BaseController
     {
         private const string PaginaListagem = "Listagem";
         private const string PaginaCadastro = "Formulario";
 
-        private readonly HttpClient _httpClient;
-        private readonly JwtTokenHandler _jwtTokenHandler;
-        private readonly IConfiguration _configuration;
+        private readonly IConsultaService _consultaservice;
+        private readonly IMedicoService _medicoService;
 
-        public ConsultaController(IHttpClientFactory httpClientFactory,
-                                   JwtTokenHandler tokenHandler,
-                                   IConfiguration configuration,
-                                   SignInManager<IdentityUser> signInManager)
-            : base(signInManager)
+        public ConsultaController(SignInManager<IdentityUser> signInManager, IConsultaService consultaService, IMedicoService medicoService)
+        : base(signInManager)
         {
-            _httpClient = httpClientFactory.CreateClient("ApiClient");
-            _jwtTokenHandler = tokenHandler;
-            _configuration = configuration;
+            _consultaservice = consultaService;
+            _medicoService = medicoService;
         }
 
-        [HttpGet("{page?}")]
+        [HttpGet]
+        [Route("{page?}")]
         public async Task<IActionResult> ListarAsync([FromQuery] int page = 1)
         {
-            var token = _jwtTokenHandler.GetToken();
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            var response = await _httpClient.GetAsync($"https://localhost:7100/api/Consulta/listar?page={page}");
-
-            if (!response.IsSuccessStatusCode)
-            {
-                return View(PaginaListagem);
-            }
-
-            var json = await response.Content.ReadAsStringAsync();
-            var consultas = JsonSerializer.Deserialize<PaginatedList<ConsultaDto>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
+            var consultasAtivas = await _consultaservice.ListarAsync(page);
+            ViewBag.Consultas = consultasAtivas;
             ViewData["Url"] = "Consultas";
-            return View(PaginaListagem, consultas);
+            return View(PaginaListagem, consultasAtivas);
         }
 
-        [HttpGet("formulario/{id?}")]
+        [HttpGet]
+        [Route("formulario/{id?}")]
         public async Task<IActionResult> ObterFormularioAsync(long? id)
         {
-            var token = _jwtTokenHandler.GetToken();
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            ConsultaDto dados;
-
-            if (id.HasValue)
-            {
-                var response = await _httpClient.GetAsync($"https://localhost:7100/api/Consulta/formulario/{id}");
-                if (!response.IsSuccessStatusCode)
-                {
-                    return RedirectToAction("Listar");
-                }
-                var json = await response.Content.ReadAsStringAsync();
-                dados = JsonSerializer.Deserialize<ConsultaDto>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            }
-            else
-            {
-                dados = new ConsultaDto { Data = DateTime.Now };
-            }
-
-            var medicosResponse = await _httpClient.GetAsync("https://localhost:7100/api/Medico/listar");
-            var medicosJson = await medicosResponse.Content.ReadAsStringAsync();
-            var medicos = JsonSerializer.Deserialize<List<MedicoDto>>(medicosJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            ViewData["Medicos"] = medicos;
+            var dados = id.HasValue
+                ? await _consultaservice.CarregarPorIdAsync(id.Value)
+                : new ConsultaDto { Data = DateTime.Now };
+            IEnumerable<MedicoDto> medicos = _medicoService.ListarTodos();
+            ViewData["Medicos"] = medicos.ToList();
             return View(PaginaCadastro, dados);
         }
 
-        [HttpPost("")]
+        [HttpPost]
+        [Route("")]
         public async Task<IActionResult> SalvarAsync([FromForm] ConsultaDto dados)
         {
-            var token = _jwtTokenHandler.GetToken();
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
             if (dados._method == "delete")
             {
-                if (dados.Id.HasValue)
-                {
-                    var response = await _httpClient.DeleteAsync($"https://localhost:7100/api/Consulta/Salvar?id={dados.Id.Value}");
-                }
+                await _consultaservice.ExcluirAsync(dados.Id);
                 return Redirect("/consultas");
+            }
+
+            if (!ModelState.IsValid) // Vídeo 4.1 - Validando dados
+            {
+                IEnumerable<MedicoDto> medicos = _medicoService.ListarTodos();
+                ViewData["Medicos"] = medicos.ToList();
+                return View(PaginaCadastro, dados);
             }
 
             try
             {
-                var json = JsonSerializer.Serialize(dados);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                var response = await _httpClient.PostAsync("https://localhost:7100/api/Consulta/Salvar", content);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var erro = await response.Content.ReadAsStringAsync();
-                    ViewBag.Erro = erro;
-                    return View(PaginaCadastro, dados);
-                }
-
+                await _consultaservice.CadastrarAsync(dados);
                 return Redirect("/consultas");
             }
-            catch (Exception ex)
+            catch (RegraDeNegocioException ex)
             {
                 ViewBag.Erro = ex.Message;
-                return View(PaginaCadastro, dados);
+                ViewBag.Dados = dados;
+                return View(PaginaCadastro);
             }
         }
     }

@@ -14,9 +14,6 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using MedVoll.Web.Dtos;
-using MedVoll.Web.Services;
-using MedVoll.Web.Models;
 
 namespace MedVoll.Web.Areas.Identity.Pages.Account
 {
@@ -24,19 +21,13 @@ namespace MedVoll.Web.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
-        private readonly UserManager<VollMedUser> _userManager;
-        private readonly TokenJWTService _tokenJWTService;
-        private readonly JwtTokenHandler _jwtTokenHandler;
-        private readonly IConfiguration _configuration;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, UserManager<VollMedUser> userManager, TokenJWTService tokenJWTService, JwtTokenHandler jwtTokenHandler, IConfiguration configuration)
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, UserManager<IdentityUser> userManager)
         {
             _signInManager = signInManager;
             _logger = logger;
             _userManager = userManager;
-            _tokenJWTService = tokenJWTService;
-            _jwtTokenHandler = jwtTokenHandler;
-            _configuration = configuration;
         }
 
         /// <summary>
@@ -125,32 +116,16 @@ namespace MedVoll.Web.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
-                    // para a limpeza de dados de sessão residual:
-                    HttpContext.Session.Clear();
+                    HttpContext.Session.Clear(); // Limpa qualquer dado residual
 
-                    // para a reemissão do cookie de autenticação após login:
+                    //Regenerate cookie for security
                     var user = await _userManager.FindByEmailAsync(Input.Email);
-                    await _signInManager.SignOutAsync();
-                    await _signInManager.SignInAsync(user, Input.RememberMe);
+                    await _signInManager.SignOutAsync(); // Clear the current authentication cookie
+                    await _signInManager.SignInAsync(user, Input.RememberMe); // Reissue a new authentication cookie
 
                     HttpContext.Session.SetString("VollMedCard", "1234.4567.7890.1234");
+                    
                     _logger.LogInformation("User logged in.");
-
-                    //***************
-                    UsuarioTokenDto usuarioTokenDto = await _tokenJWTService.GerarTokenDeUsuarioAsync(Input.Email, user, _userManager);
-                    _jwtTokenHandler.StoreToken(usuarioTokenDto.Token);
-
-                    var refreshToken = _tokenJWTService.GerarRefreshToken();
-                    usuarioTokenDto.RefreshToken = refreshToken;
-
-                    //Adicionar o refresh token ao usuário
-                    user.RefreshToken = refreshToken;
-                    var expire = int.TryParse(_configuration["JWTTokenConfiguration:RefreshExpireInMinutes"],
-                        out int refreshExpireInMinutes);
-                    user.ExpireTime = DateTime.Now.AddMinutes(refreshExpireInMinutes);
-                    await _userManager.UpdateAsync(user);
-                    //***************
-
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
@@ -168,6 +143,7 @@ namespace MedVoll.Web.Areas.Identity.Pages.Account
                     return Page();
                 }
             }
+
 
             // If we got this far, something failed, redisplay form
             return Page();

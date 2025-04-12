@@ -1,4 +1,5 @@
 ﻿using MedVoll.Web.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -8,6 +9,7 @@ namespace MedVoll.Web.Controllers
     public class BaseController : Controller
     {
         private readonly SignInManager<IdentityUser> _signInManager;
+
         public BaseController(SignInManager<IdentityUser> signInManager)
         {
             _signInManager = signInManager;
@@ -19,7 +21,6 @@ namespace MedVoll.Web.Controllers
             {
                 context.Result = new RedirectResult("./Login");
             }
-
             ViewData["Especialidades"] = GetEspecialidades();
             ViewData["VollMedCard"] = HttpContext.Session.GetString("VollMedCard");
             base.OnActionExecuting(context);
@@ -36,16 +37,17 @@ namespace MedVoll.Web.Controllers
             var currentIp = HttpContext.Connection.RemoteIpAddress.ToString();
             var sessionIp = HttpContext.Session.GetString("IpAddress");
 
-            if (sessionIp != null && sessionIp != currentIp)
+            if (sessionIp != null)
             {
-                HttpContext.Session.Clear();
-                _signInManager.SignOutAsync();
-                return false;
+                if (sessionIp != currentIp)
+                {
+                    HttpContext.Session.Clear(); // End session if the IP changes
+                    _signInManager.SignOutAsync(); // Finalize authentication
+                    return false;
+                }
             }
-
             HttpContext.Session.SetString("IpAddress", currentIp);
             return true;
         }
-
     }
 }

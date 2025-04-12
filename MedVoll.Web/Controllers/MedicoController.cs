@@ -1,137 +1,86 @@
 ﻿using MedVoll.Web.Dtos;
+using MedVoll.Web.Exceptions;
+using MedVoll.Web.Interfaces;
 using MedVoll.Web.Models;
-using MedVoll.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
 
 namespace MedVoll.Web.Controllers
 {
-    [Authorize]
+    [Authorize()]
     [Route("medicos")]
     public class MedicoController : BaseController
     {
         private const string PaginaListagem = "Listagem";
         private const string PaginaCadastro = "Formulario";
-        private readonly HttpClient _httpClient;
-        private readonly JwtTokenHandler _jwtTokenHandler;
-        private readonly IConfiguration _config;
+        private readonly IMedicoService _service;
 
-        public MedicoController(
-            IHttpClientFactory httpClientFactory,
-            JwtTokenHandler jwtTokenHandler,
-            IConfiguration config,
-            SignInManager<IdentityUser> signInManager)
-            : base(signInManager)
+        public MedicoController(SignInManager<IdentityUser> signInManager, IMedicoService service)
+        : base(signInManager)
         {
-            _httpClient = httpClientFactory.CreateClient("ApiClient");
-            _jwtTokenHandler = jwtTokenHandler;
-            _config = config;
+            _service = service;
         }
 
-        [HttpGet("{page?}")]
+        [HttpGet]
+        [Route("{page?}")]
         public async Task<IActionResult> ListarAsync([FromQuery] int page = 1)
         {
-            var token = _jwtTokenHandler.GetToken();
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var response = await _httpClient.GetAsync($"https://localhost:7100/api/Medico/Listar?page={page}");
-
-            if (!response.IsSuccessStatusCode)
-            {
-                return View(PaginaListagem);
-            }
-
-            var content = await response.Content.ReadAsStringAsync();
-            var medicos = JsonSerializer.Deserialize<PaginatedList<MedicoDto>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var medicosCadastrados = await _service.ListarAsync(page);
             ViewData["Url"] = "Medicos";
-            return View(PaginaListagem, medicos);
+            return View(PaginaListagem, medicosCadastrados);
         }
 
-        [HttpGet("formulario/{id?}")]
+        [HttpGet]
+        [Route("formulario/{id?}")]
         public async Task<IActionResult> ObterFormularioAsync(long? id)
         {
-            var token = _jwtTokenHandler.GetToken();
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            MedicoDto dados;
-            if (id.HasValue)
-            {
-                var response = await _httpClient.GetAsync($"https://localhost:7100/api/Medico/formulario/{id.Value}");
-                if (!response.IsSuccessStatusCode) return NotFound();
-                var json = await response.Content.ReadAsStringAsync();
-                dados = JsonSerializer.Deserialize<MedicoDto>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            }
-            else
-            {
-                dados = new MedicoDto();
-            }
+            var dados = id.HasValue 
+                ? await _service.CarregarPorIdAsync(id.Value) 
+                : new MedicoDto();
 
             return View(PaginaCadastro, dados);
         }
 
         [Authorize(Roles = "Admin")]
-        [ValidateAntiForgeryToken]
-        [HttpPost("")]
+        [ValidateAntiForgeryToken()]
+        [HttpPost]
+        [Route("")]
         public async Task<IActionResult> SalvarAsync([FromForm] MedicoDto dados)
         {
-            var token = _jwtTokenHandler.GetToken();
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
             if (dados._method == "delete")
             {
-                var deleteRequest = new HttpRequestMessage(HttpMethod.Post, "https://localhost:7100/api/Medico")
-                {
-                    Content = new StringContent(JsonSerializer.Serialize(dados), Encoding.UTF8, "application/json")
-                };
-                deleteRequest.Headers.Add("X-HTTP-Method-Override", "DELETE");
-                await _httpClient.SendAsync(deleteRequest);
+                await _service.ExcluirAsync(dados.Id.Value);
                 return Redirect("/medicos");
             }
 
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid) // Vídeo 4.1 - Validando dados
             {
                 return View(PaginaCadastro, dados);
             }
 
             try
             {
-                var jsonContent = new StringContent(JsonSerializer.Serialize(dados), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync("https://localhost:7100/api/Medico", jsonContent);
-                if (!response.IsSuccessStatusCode)
-                {
-                    var erro = await response.Content.ReadAsStringAsync();
-                    ViewBag.Erro = erro;
-                    return View(PaginaCadastro, dados);
-                }
-
+                await _service.CadastrarAsync(dados);
                 return Redirect("/medicos");
             }
-            catch (Exception ex)
+            catch (RegraDeNegocioException ex)
             {
                 ViewBag.Erro = ex.Message;
-                return View(PaginaCadastro, dados);
+                ViewBag.Dados = dados;
+                return View(PaginaCadastro);
             }
         }
 
-        [HttpGet("especialidade/{especialidade}")]
+        [HttpGet]
+        [Route("especialidade/{especialidade}")]
         public async Task<IActionResult> ListarPorEspecialidadeAsync(string especialidade)
         {
-            var token = _jwtTokenHandler.GetToken();
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
             if (Enum.TryParse(especialidade, out Especialidade especEnum))
             {
-                var response = await _httpClient.GetAsync($"https://localhost:7100/api/Medico/especialidade/{especEnum}");
-                if (!response.IsSuccessStatusCode) return BadRequest("Erro ao buscar médicos");
-
-                var json = await response.Content.ReadAsStringAsync();
-                var medicos = JsonSerializer.Deserialize<List<MedicoDto>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var medicos = await _service.ListarPorEspecialidadeAsync(especEnum);
                 return Json(medicos);
             }
-
             return BadRequest("Especialidade inválida.");
         }
     }
