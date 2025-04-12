@@ -47,10 +47,5 @@
   <ItemGroup>
     <ProjectReference Include="..\MedVoll.ServiceDefaults\MedVoll.ServiceDefaults.csproj" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <!-- Don't use this in production -->
-    <Content Include="tempkey.jwk" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
 
 </Project>
