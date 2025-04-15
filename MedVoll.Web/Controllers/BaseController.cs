@@ -8,19 +8,12 @@ namespace MedVoll.Web.Controllers
 {
     public class BaseController : Controller
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-
-        public BaseController(SignInManager<IdentityUser> signInManager)
+        public BaseController()
         {
-            _signInManager = signInManager;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            if (!CheckSessionSecurity())
-            {
-                context.Result = new RedirectResult("./Login");
-            }
             ViewData["Especialidades"] = GetEspecialidades();
             ViewData["VollMedCard"] = HttpContext.Session.GetString("VollMedCard");
             base.OnActionExecuting(context);
@@ -30,24 +23,6 @@ namespace MedVoll.Web.Controllers
         {
             var especialidades = (Especialidade[])Enum.GetValues(typeof(Especialidade));
             return especialidades.ToList();
-        }
-
-        private bool CheckSessionSecurity()
-        {
-            var currentIp = HttpContext.Connection.RemoteIpAddress.ToString();
-            var sessionIp = HttpContext.Session.GetString("IpAddress");
-
-            if (sessionIp != null)
-            {
-                if (sessionIp != currentIp)
-                {
-                    HttpContext.Session.Clear(); // End session if the IP changes
-                    _signInManager.SignOutAsync(); // Finalize authentication
-                    return false;
-                }
-            }
-            HttpContext.Session.SetString("IpAddress", currentIp);
-            return true;
         }
     }
 }

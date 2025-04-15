@@ -11,6 +11,10 @@ namespace MedVoll.Web.Dtos
         public bool HasPreviousPage => PageNumber > 1;
         public bool HasNextPage => PageNumber < TotalPages;
 
+        public PaginatedList()
+        {
+        }
+
         public PaginatedList(List<T> items, int totalItemCount, int pageNumber, int pageSize)
         {
             TotalItemCount = totalItemCount;

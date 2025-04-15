@@ -9,7 +9,7 @@ namespace MedVoll.Web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin,Atendimento,RH")]
+    [Authorize(Policy = "ApiScope")]
     public class MedicoController : ControllerBase
     {
         private const string PaginaCadastro = "Formulario";

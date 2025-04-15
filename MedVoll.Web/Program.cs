@@ -6,6 +6,10 @@ using MedVoll.Web.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Http;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,9 +24,15 @@ builder.Services.AddControllersWithViews(options =>
 var connectionString = builder.Configuration.GetConnectionString("SqliteConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(x => x.UseSqlite(connectionString));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+//    .AddRoles<IdentityRole>()
+//    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+//builder.Services.AddIdentityCore<IdentityUser>()
+//    .AddRoles<IdentityRole>()
+//    .AddRoleManager<RoleManager<IdentityRole>>()
+//    .AddSignInManager<SignInManager<IdentityUser>>()
+//    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -38,43 +48,60 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SameSite = SameSiteMode.Strict; // Restringe envio de cookies entre sites
 });
 
+
+var uri = new Uri(builder.Configuration["ApiUrl"]);
+HttpClient httpClient = new HttpClient()
+{
+    BaseAddress = uri
+};
+
+builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddTransient<ISessionHelper, SessionHelper>();
 builder.Services.AddTransient<IMedicoRepository, MedicoRepository>();
 builder.Services.AddTransient<IConsultaRepository, ConsultaRepository>();
 builder.Services.AddTransient<IMedicoService, MedicoService>();
 builder.Services.AddTransient<IConsultaService, ConsultaService>();
+builder.Services.AddTransient<IMedVollApiService, MedVollApiService>();
 
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.SignIn.RequireConfirmedEmail = true; // Exigir e-mails confirmados para login
-    options.SignIn.RequireConfirmedPhoneNumber = false; // Não exigir confirmação de número de telefone
-
-    options.Lockout.AllowedForNewUsers = true;
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(3);
-    options.Lockout.MaxFailedAccessAttempts = 3;
-
-    options.Password.RequireDigit = true; // Exigir pelo menos um número
-    options.Password.RequireLowercase = true; // Exigir pelo menos uma letra minúscula
-    options.Password.RequireUppercase = true; // Exigir pelo menos uma letra maiúscula
-    options.Password.RequireNonAlphanumeric = true; // Exigir caracteres especiais
-    options.Password.RequiredLength = 8; // Tamanho mínimo da senha
-});
+builder.Services.AddSingleton(typeof(HttpClient), httpClient);
 
 builder.Services.AddSession(options =>
 {
-    options.Cookie.HttpOnly = true; // Proteger cookie contra acesso via JavaScript
-    options.Cookie.IsEssential = true; // Garantir que o cookie seja salvo mesmo sem consentimento do usuário (GDPR)
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Exigir HTTPS para cookies
-    options.IdleTimeout = TimeSpan.FromMinutes(1); // Tempo de expiração da sessão
+    //options.Cookie.HttpOnly = true; // Proteger cookie contra acesso via JavaScript
+    //options.Cookie.IsEssential = true; // Garantir que o cookie seja salvo mesmo sem consentimento do usuário (GDPR)
+    //options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Exigir HTTPS para cookies
+    //options.IdleTimeout = TimeSpan.FromMinutes(1); // Tempo de expiração da sessão
 });
 
-builder.Services.AddAntiforgery(options =>
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+builder.Services.AddRazorPages();
+
+builder.Services.AddAuthentication(options =>
 {
-    options.Cookie.Name = "VollMed.AntiForgery"; // Nome personalizado do cookie
-    options.Cookie.HttpOnly = true; // Evitar acesso via JavaScript
-    options.HeaderName = "X-CSRF-TOKEN"; // Cabeçalho personalizado para APIs
-});
+    options.DefaultScheme = "Cookies";
+    options.DefaultChallengeScheme = "oidc";
+})
+    .AddCookie("Cookies")
+    .AddOpenIdConnect("oidc", options =>
+    {
+        options.Authority = "https://localhost:5001";
 
-builder.Services.AddAuthorization();
+        options.ClientId = "MedVoll.Web";
+        options.ClientSecret = "secret";
+        options.ResponseType = "code";
+
+        options.Scope.Clear();
+        options.Scope.Add("openid");
+        options.Scope.Add("profile");
+        options.Scope.Add("MedVoll.WebAPI");
+
+        options.GetClaimsFromUserInfoEndpoint = true;
+
+        options.MapInboundClaims = false; // Don't rename claim types
+
+        options.SaveTokens = true;
+    });
 
 
 var app = builder.Build();
@@ -95,6 +122,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(
@@ -104,17 +133,17 @@ app.MapControllerRoute(
 app.MapRazorPages()
    .WithStaticAssets();
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        await IdentitySeeder.SeedUsersAsync(services);
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Erro ao executar o Seeder: {ex.Message}");
-    }
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    try
+//    {
+//        await IdentitySeeder.SeedUsersAsync(services);
+//    }
+//    catch (Exception ex)
+//    {
+//        Console.WriteLine($"Erro ao executar o Seeder: {ex.Message}");
+//    }
+//}
 
 app.Run();

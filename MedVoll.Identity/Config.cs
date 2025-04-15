@@ -22,15 +22,13 @@ public static class Config
                     JwtClaimTypes.Email,
                     JwtClaimTypes.EmailVerified
                 }
-            },
-            new IdentityResource("color", new [] { "favorite_color" })
-
+            }
         };
 
     public static IEnumerable<ApiScope> ApiScopes =>
         new ApiScope[]
         {
-            new ApiScope(name: "api1", displayName: "My API")
+            new ApiScope(name: "MedVoll.WebAPI", displayName: "MedVoll.WebAPI")
         };
 
     public static IEnumerable<Client> Clients =>
@@ -38,24 +36,7 @@ public static class Config
         {
             new Client
             {
-                ClientId = "client",
-
-                // no interactive user, use the clientid/secret for authentication
-                AllowedGrantTypes = GrantTypes.ClientCredentials,
-
-                // secret for authentication
-                ClientSecrets =
-                {
-                    new Secret("secret".Sha256())
-                },
-
-                // scopes that client has access to
-                AllowedScopes = { "api1" }
-            },
-            // interactive ASP.NET Core Web App
-            new Client
-            {
-                ClientId = "web",
+                ClientId = "MedVoll.Web",
                 ClientSecrets = { new Secret("secret".Sha256()) },
 
                 AllowedGrantTypes = GrantTypes.Code,
@@ -72,9 +53,7 @@ public static class Config
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
-                    "verification",
-                    "api1",
-                    "color"
+                    "MedVoll.WebAPI"
                 }
             }
         };

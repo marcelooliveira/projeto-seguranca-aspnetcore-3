@@ -8,7 +8,7 @@ namespace MedVoll.Web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin,Atendimento")]
+    [Authorize(Policy = "ApiScope")]
     public class ConsultaController : ControllerBase
     {
         private readonly IConsultaService _consultaservice;

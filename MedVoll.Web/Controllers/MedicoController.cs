@@ -2,6 +2,7 @@
 using MedVoll.Web.Exceptions;
 using MedVoll.Web.Interfaces;
 using MedVoll.Web.Models;
+using MedVoll.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,20 +16,22 @@ namespace MedVoll.Web.Controllers
         private const string PaginaListagem = "Listagem";
         private const string PaginaCadastro = "Formulario";
         private readonly IMedicoService _service;
+        private readonly IMedVollApiService _medVollApiService;
 
-        public MedicoController(SignInManager<IdentityUser> signInManager, IMedicoService service)
-        : base(signInManager)
+        public MedicoController(IMedVollApiService medVollApiService)
+        : base()
         {
-            _service = service;
+            _medVollApiService = medVollApiService;
         }
 
         [HttpGet]
         [Route("{page?}")]
         public async Task<IActionResult> ListarAsync([FromQuery] int page = 1)
         {
-            var medicosCadastrados = await _service.ListarAsync(page);
+            var medicos = await _medVollApiService.WithHttpContext(HttpContext).ListarMedicos(page);
+            ViewBag.Consultas = medicos;
             ViewData["Url"] = "Medicos";
-            return View(PaginaListagem, medicosCadastrados);
+            return View(PaginaListagem, medicos);
         }
 
         [HttpGet]
