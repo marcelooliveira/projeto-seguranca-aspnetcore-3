@@ -77,12 +77,14 @@ JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 builder.Services.AddRazorPages();
 
+const long ExpireInMinutes = 360;
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = "Cookies";
     options.DefaultChallengeScheme = "oidc";
 })
-    .AddCookie("Cookies")
+    .AddCookie("Cookies", options => options.ExpireTimeSpan = TimeSpan.FromMinutes(ExpireInMinutes))
     .AddOpenIdConnect("oidc", options =>
     {
         options.Authority = "https://localhost:5001";

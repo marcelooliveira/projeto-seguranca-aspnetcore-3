@@ -61,6 +61,19 @@ namespace MedVoll.Web.Services
             return await PutOrPostAsync<T>(uri, content, httpVerbMethod);
         }
 
+        protected async Task DeleteAsync<T>(string uri, params object[] param)
+        {
+            string requestUri =
+                string.Format(new Uri(new Uri(_baseUri), uri).ToString(), param);
+
+            foreach (var par in param)
+            {
+                requestUri += string.Format($"/{par}");
+            }
+
+            var json = await _httpClient.DeleteAsync(requestUri);
+        }
+
         private async Task<T> PutOrPostAsync<T>(string uri, object content, HttpVerbMethod httpVerbMethod)
         {
             var jsonIn = JsonConvert.SerializeObject(content);

@@ -26,7 +26,7 @@ namespace MedVoll.Web.Services
 
         public async Task CadastrarAsync(ConsultaDto dados)
         {
-            var medicoConsulta = await _medicoRepository.FindByIdAsync(dados.IdMedico);
+            var medicoConsulta = await _medicoRepository.FindByIdAsync(dados.IdMedico.Value);
             if (medicoConsulta == null)
             {
                 throw new RegraDeNegocioException("Medico não encontrado.");
@@ -39,7 +39,7 @@ namespace MedVoll.Web.Services
             }
             else
             {
-                var consulta = await _consultaRepository.FindByIdAsync(dados.Id);
+                var consulta = await _consultaRepository.FindByIdAsync(dados.Id.Value);
                 if (consulta == null) throw new RegraDeNegocioException("Consulta não encontrada.");
 
                 consulta.ModificarDados(medicoConsulta, dados);

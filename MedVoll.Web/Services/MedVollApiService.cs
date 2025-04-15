@@ -1,4 +1,5 @@
 ﻿using MedVoll.Web.Dtos;
+using MedVoll.Web.Models;
 
 namespace MedVoll.Web.Services
 {
@@ -9,10 +10,11 @@ namespace MedVoll.Web.Services
             public static string ListarConsultas = "/api/Consulta/listar";
             public static string ObterFormularioConsulta = "/api/Consulta/formulario";
             public static string SalvarConsulta = "/api/Consulta/Salvar";
+            public static string ExcluirConsulta = "/api/Consulta/Excluir";
             public static string ListarMedicos = "/api/Medico/Listar";
             public static string ObterFormularioMedico = "/api/Medico/formulario";
             public static string SalvarMedico = "/api/Medico";
-            public static string ListarMedicoPorEspecialidade = "/api/Medico/especialidade";
+            public static string ListarMedicosPorEspecialidade = "/api/Medico/especialidade";
         }
 
         private readonly HttpClient _apiClient;
@@ -43,10 +45,23 @@ namespace MedVoll.Web.Services
             return await GetAuthenticatedAsync<PaginatedList<ConsultaDto>>(uri);
         }
 
-        public async Task<IEnumerable<ConsultaDto>> ObterFormularioConsulta(long? id)
+        public async Task<FormularioConsultaDto> ObterFormularioConsulta(long? id)
         {
             var uri = $"{ApiUris.ObterFormularioConsulta}/{id}";
-            return await GetAuthenticatedAsync<IEnumerable<ConsultaDto>>(uri);
+            return await GetAuthenticatedAsync<FormularioConsultaDto>(uri);
+        }
+
+        public async Task<ConsultaDto> CadastrarConsulta(ConsultaDto input)
+        {
+            var uri = $"{ApiUris.SalvarConsulta}";
+            return await PutAsync<ConsultaDto>(uri, input);
+        }
+
+        public async Task ExcluirConsulta(long consultaId)
+        {
+            var uri = $"{ApiUris.ExcluirConsulta}";
+            var consulta = new ConsultaDto { Id = consultaId };
+            await DeleteAsync<ConsultaDto>(uri, consultaId);
         }
 
         public async Task<PaginatedList<MedicoDto>> ListarMedicos(int? page)
@@ -55,11 +70,11 @@ namespace MedVoll.Web.Services
             return await GetAuthenticatedAsync<PaginatedList<MedicoDto>>(uri);
         }
 
-        //public async Task<UpdateQuantidadeOutput> UpdateItem(string clienteId, UpdateQuantidadeInput input)
-        //{
-        //    var uri = $"{CarrinhoUris.UpdateItem}/{clienteId}";
-        //    return await PutAsync<UpdateQuantidadeOutput>(uri, input);
-        //}
+        public async Task<IEnumerable<MedicoDto>> ListarMedicosPorEspecialidade(Especialidade especEnum)
+        {
+            var uri = $"{ApiUris.ListarMedicosPorEspecialidade}/{especEnum}";
+            return await GetAuthenticatedAsync<IEnumerable<MedicoDto>>(uri);
+        }
 
         //public async Task<CarrinhoCliente> DefinirQuantidades(ApplicationUser applicationUser, Dictionary<string, int> quantidades)
         //{

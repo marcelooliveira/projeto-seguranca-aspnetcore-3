@@ -1,4 +1,5 @@
 ﻿using MedVoll.Web.Dtos;
+using MedVoll.Web.Models;
 
 namespace MedVoll.Web.Services
 {
@@ -7,7 +8,11 @@ namespace MedVoll.Web.Services
         string Scope { get; }
         IMedVollApiService WithHttpContext(HttpContext context);
         Task<PaginatedList<ConsultaDto>> ListarConsultas(int? page);
-        Task<IEnumerable<ConsultaDto>> ObterFormularioConsulta(long? id);
+        Task<FormularioConsultaDto> ObterFormularioConsulta(long? consultaId);
+        Task ExcluirConsulta(long consultaId);
+        Task<ConsultaDto> CadastrarConsulta(ConsultaDto input);
+
         Task<PaginatedList<MedicoDto>> ListarMedicos(int? page);
+        Task<IEnumerable<MedicoDto>> ListarMedicosPorEspecialidade(Especialidade especEnum);
     }
 }

@@ -36,11 +36,11 @@ namespace MedVoll.Web.Dtos
             Especialidade = consulta.Medico.Especialidade;
         }
 
-        public long Id { get; set; }
+        public long? Id { get; set; }
         public string _method { get; set; }
 
         [Required(ErrorMessage = "Campo obrigatório")] // Vídeo 4.1 - Validando dados
-        public long IdMedico { get; set; }
+        public long? IdMedico { get; set; }
         [ValidateNever] // Vídeo 4.1 - Validando dados
         public string MedicoNome { get; set; }
         [Required(ErrorMessage = "Campo obrigatório"), StringLength(11, MinimumLength = 11, ErrorMessage = "CPF deve ter 11 digitos")] // Vídeo 4.1 - Validando dados
@@ -48,7 +48,7 @@ namespace MedVoll.Web.Dtos
         [Required(ErrorMessage = "Campo obrigatório"), DataType(DataType.DateTime)] // Vídeo 4.1 - Validando dados
         public DateTime Data { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")] // Vídeo 4.1 - Validando dados
-        public Especialidade Especialidade { get; set; }
+        public Especialidade? Especialidade { get; set; }
     }
 }
 

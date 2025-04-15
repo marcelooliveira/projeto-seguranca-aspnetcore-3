@@ -29,36 +29,40 @@ namespace MedVoll.Web.Controllers
         }
 
         [HttpGet("formulario/{id?}")]
-        public async Task<IActionResult> ObterFormularioAsync(long? id)
+        public async Task<IActionResult> ObterFormularioAsync(long id = 0)
         {
-            var dados = id.HasValue
-                ? await _consultaservice.CarregarPorIdAsync(id.Value)
+            var dados = id > 0
+                ? await _consultaservice.CarregarPorIdAsync(id)
                 : new ConsultaDto { Data = DateTime.Now };
-            IEnumerable<MedicoDto> medicos = _medicoService.ListarTodos();         
-            return Ok(new { medicos, dados });
+            IEnumerable<MedicoDto> medicos = _medicoService.ListarTodos();
+            var formularioConsulta = new FormularioConsultaDto
+            {
+                Consulta = dados,
+                Medicos = medicos
+            };
+            return Ok(formularioConsulta);
         }
 
-        [HttpPost("Salvar")]    
-        public async Task<IActionResult> SalvarAsync([FromForm] ConsultaDto dados)
+        [HttpPut("Salvar")]
+        [HttpPost("Salvar")]
+        public async Task<IActionResult> SalvarAsync([FromBody] ConsultaDto dados)
         {
-            if (dados._method == "delete")
-            {
-                if (dados.Id.HasValue)
-                {
-                    await _consultaservice.ExcluirAsync(dados.Id.Value);
-                }
-                return NoContent();
-            }       
-
             try
             {
                 await _consultaservice.CadastrarAsync(dados);
-                return Ok("Consulta registrada com sucesso!");
+                return Ok(dados);
             }
             catch (RegraDeNegocioException ex)
             {
                 return NotFound($"Erro:{ex.Message}");
             }
+        }
+
+        [HttpDelete("Excluir/{id}")]
+        public async Task<IActionResult> ExcluirAsync(int id)
+        {
+            await _consultaservice.ExcluirAsync(id);
+            return Ok();
         }
     }
 }

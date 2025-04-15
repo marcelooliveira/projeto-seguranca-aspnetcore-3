@@ -40,48 +40,41 @@ namespace MedVoll.Web.Controllers
 
         [HttpGet]
         [Route("formulario/{id?}")]
-        public async Task<IActionResult> ObterFormularioAsync(long? id)
+        public async Task<IActionResult> ObterFormularioAsync(long id = 0)
         {
-            //var dados = id.HasValue
-            //    ? await _medVollApiService.ObterFormularioConsulta(id.Value)
-            //    : new ConsultaDto { Data = DateTime.Now };
-            //IEnumerable<MedicoDto> medicos = _medicoService.ListarTodos();
-
-
-            //var medicos = await _medVollApiService.WithHttpContext(HttpContext).ListarConsulta();
-
-            //ViewData["Medicos"] = medicos.ToList();
-            return View(PaginaCadastro, null);
+            FormularioConsultaDto formularioConsulta = await _medVollApiService.WithHttpContext(HttpContext).ObterFormularioConsulta(id);
+            ViewData["Medicos"] = formularioConsulta.Medicos;
+            return View(PaginaCadastro, formularioConsulta.Consulta);
         }
 
-        //[HttpPost]
-        //[Route("")]
-        //public async Task<IActionResult> SalvarAsync([FromForm] ConsultaDto dados)
-        //{
-        //    if (dados._method == "delete")
-        //    {
-        //        await _consultaservice.ExcluirAsync(dados.Id);
-        //        return Redirect("/consultas");
-        //    }
+        [HttpPost]
+        [Route("")]
+        public async Task<IActionResult> SalvarAsync([FromForm] ConsultaDto dados)
+        {
+            if (dados._method == "delete")
+            {
+                await _medVollApiService.WithHttpContext(HttpContext).ExcluirConsulta(dados.Id.Value);
+                return Redirect("/consultas");
+            }
 
-        //    if (!ModelState.IsValid) // Vídeo 4.1 - Validando dados
-        //    {
-        //        IEnumerable<MedicoDto> medicos = _medicoService.ListarTodos();
-        //        ViewData["Medicos"] = medicos.ToList();
-        //        return View(PaginaCadastro, dados);
-        //    }
+            if (!ModelState.IsValid)
+            {
+                IEnumerable<MedicoDto> medicos = await _medVollApiService.WithHttpContext(HttpContext).ListarMedicos(1);
+                ViewData["Medicos"] = medicos.ToList();
+                return View(PaginaCadastro, dados);
+            }
 
-        //    try
-        //    {
-        //        await _consultaservice.CadastrarAsync(dados);
-        //        return Redirect("/consultas");
-        //    }
-        //    catch (RegraDeNegocioException ex)
-        //    {
-        //        ViewBag.Erro = ex.Message;
-        //        ViewBag.Dados = dados;
-        //        return View(PaginaCadastro);
-        //    }
-        //}
+            try
+            {
+                await _medVollApiService.WithHttpContext(HttpContext).CadastrarConsulta(dados);
+                return Redirect("/consultas");
+            }
+            catch (RegraDeNegocioException ex)
+            {
+                ViewBag.Erro = ex.Message;
+                ViewBag.Dados = dados;
+                return View(PaginaCadastro);
+            }
+        }
     }
 }

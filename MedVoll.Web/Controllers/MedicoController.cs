@@ -81,7 +81,7 @@ namespace MedVoll.Web.Controllers
         {
             if (Enum.TryParse(especialidade, out Especialidade especEnum))
             {
-                var medicos = await _service.ListarPorEspecialidadeAsync(especEnum);
+                var medicos = await _medVollApiService.WithHttpContext(HttpContext).ListarMedicosPorEspecialidade(especEnum);
                 return Json(medicos);
             }
             return BadRequest("Especialidade inválida.");
