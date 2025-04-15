@@ -11,9 +11,11 @@ namespace MedVoll.Web.Services
             public static string ObterFormularioConsulta = "/api/Consulta/formulario";
             public static string SalvarConsulta = "/api/Consulta/Salvar";
             public static string ExcluirConsulta = "/api/Consulta/Excluir";
+
             public static string ListarMedicos = "/api/Medico/Listar";
             public static string ObterFormularioMedico = "/api/Medico/formulario";
-            public static string SalvarMedico = "/api/Medico";
+            public static string SalvarMedico = "/api/Medico/Salvar";
+            public static string ExcluirMedico = "/api/Medico/Excluir";
             public static string ListarMedicosPorEspecialidade = "/api/Medico/especialidade";
         }
 
@@ -64,10 +66,32 @@ namespace MedVoll.Web.Services
             await DeleteAsync<ConsultaDto>(uri, consultaId);
         }
 
+
+
+
         public async Task<PaginatedList<MedicoDto>> ListarMedicos(int? page)
         {
             var uri = $"{ApiUris.ListarMedicos}/?page={page}";
             return await GetAuthenticatedAsync<PaginatedList<MedicoDto>>(uri);
+        }
+
+        public async Task<MedicoDto> ObterFormularioMedico(long? id)
+        {
+            var uri = $"{ApiUris.ObterFormularioMedico}/{id}";
+            return await GetAuthenticatedAsync<MedicoDto>(uri);
+        }
+
+        public async Task<MedicoDto> CadastrarMedico(MedicoDto input)
+        {
+            var uri = $"{ApiUris.SalvarMedico}";
+            return await PutAsync<MedicoDto>(uri, input);
+        }
+
+        public async Task ExcluirMedico(long medicoId)
+        {
+            var uri = $"{ApiUris.ExcluirMedico}";
+            var medico = new MedicoDto { Id = medicoId };
+            await DeleteAsync<MedicoDto>(uri, medicoId);
         }
 
         public async Task<IEnumerable<MedicoDto>> ListarMedicosPorEspecialidade(Especialidade especEnum)

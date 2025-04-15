@@ -36,35 +36,32 @@ namespace MedVoll.Web.Controllers
 
         [HttpGet]
         [Route("formulario/{id?}")]
-        public async Task<IActionResult> ObterFormularioAsync(long? id)
+        public async Task<IActionResult> ObterFormularioAsync(long? id = 0)
         {
-            var dados = id.HasValue 
-                ? await _service.CarregarPorIdAsync(id.Value) 
-                : new MedicoDto();
-
-            return View(PaginaCadastro, dados);
+            MedicoDto medico = await _medVollApiService.WithHttpContext(HttpContext).ObterFormularioMedico(id);
+            return View(PaginaCadastro, medico);
         }
 
-        [Authorize(Roles = "Admin")]
-        [ValidateAntiForgeryToken()]
         [HttpPost]
         [Route("")]
         public async Task<IActionResult> SalvarAsync([FromForm] MedicoDto dados)
         {
             if (dados._method == "delete")
             {
-                await _service.ExcluirAsync(dados.Id.Value);
+                await _medVollApiService.WithHttpContext(HttpContext).ExcluirMedico(dados.Id.Value);
                 return Redirect("/medicos");
             }
 
-            if (!ModelState.IsValid) // Vídeo 4.1 - Validando dados
+            if (!ModelState.IsValid)
             {
+                IEnumerable<MedicoDto> medicos = await _medVollApiService.WithHttpContext(HttpContext).ListarMedicos(1);
+                ViewData["Medicos"] = medicos.ToList();
                 return View(PaginaCadastro, dados);
             }
 
             try
             {
-                await _service.CadastrarAsync(dados);
+                await _medVollApiService.WithHttpContext(HttpContext).CadastrarMedico(dados);
                 return Redirect("/medicos");
             }
             catch (RegraDeNegocioException ex)

@@ -13,6 +13,9 @@ namespace MedVoll.Web.Services
         Task<ConsultaDto> CadastrarConsulta(ConsultaDto input);
 
         Task<PaginatedList<MedicoDto>> ListarMedicos(int? page);
+        Task<MedicoDto> ObterFormularioMedico(long? medicoId);
+        Task ExcluirMedico(long medicoId);
+        Task<MedicoDto> CadastrarMedico(MedicoDto input);
         Task<IEnumerable<MedicoDto>> ListarMedicosPorEspecialidade(Especialidade especEnum);
     }
 }

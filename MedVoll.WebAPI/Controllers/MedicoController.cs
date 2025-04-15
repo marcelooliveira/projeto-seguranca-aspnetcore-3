@@ -28,34 +28,36 @@ namespace MedVoll.Web.Controllers
         }
 
         [HttpGet("formulario/{id?}")]   
-        public async Task<IActionResult> ObterFormularioAsync(long? id)
+        public async Task<IActionResult> ObterFormularioAsync(long id = 0)
         {
-            var dados = id.HasValue
-                ? await _service.CarregarPorIdAsync(id.Value)
+            var dados = id > 0
+                ? await _service.CarregarPorIdAsync(id)
                 : new MedicoDto();
 
-            return Ok(new { PaginaCadastro, dados });
+            return Ok(dados);
         }
 
-        [Authorize(Policy = "EditorDeMedicos")]
-        [HttpPost]
-        public async Task<IActionResult> SalvarAsync([FromForm] MedicoDto dados)
+        [HttpPut("Salvar")]
+        [HttpPost("Salvar")]
+        public async Task<IActionResult> SalvarAsync([FromBody] MedicoDto dados)
         {
-            if (dados._method == "delete")
-            {
-                await _service.ExcluirAsync(dados.Id.Value);
-                return NoContent();
-            }
             try
             {
                 await _service.CadastrarAsync(dados);
-                return Ok("Dados salvos com sucesso!");
+                return Ok(dados);
             }
             catch (RegraDeNegocioException ex)
             {
                
                 return NotFound(new{dados,ex.Message});
             }
+        }
+
+        [HttpDelete("Excluir/{id}")]
+        public async Task<IActionResult> ExcluirAsync(int id)
+        {
+            await _service.ExcluirAsync(id);
+            return Ok();
         }
 
         [HttpGet("especialidade/{especialidade}")]       

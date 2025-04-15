@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MedVoll.Web.Dtos
 {
+    [Serializable]
     public class MedicoDto
     {
         public MedicoDto()
