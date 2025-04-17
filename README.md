@@ -8,10 +8,11 @@ Este tutorial orienta você a configurar, executar e testar uma solução ASP.NE
 
 ---
 
-## 1. Clonar o projeto (se necessário)
+## 1. Baixar a solução (na branch Aula0)
+
+https://github.com/marcelooliveira/projeto-seguranca-aspnetcore-3/archive/refs/heads/Aula0.zip
 
 ```bash
-git clone https://github.com/seu-usuario/projeto-seguranca-aspnetcore-3.git
 cd projeto-seguranca-aspnetcore-3
 ```
 
