@@ -1,7 +1,7 @@
 ﻿using MedVoll.Web.Dtos;
 using MedVoll.Web.Models;
 
-namespace MedVoll.Web.Services
+namespace MedVoll.Web.Interfaces
 {
     public interface IMedVollApiService : IBaseHttpService
     {

@@ -1,5 +1,5 @@
 ﻿using MedVoll.Web.Dtos;
-using MedVoll.Web.Services;
+using MedVoll.Web.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

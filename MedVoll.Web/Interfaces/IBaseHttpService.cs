@@ -1,5 +1,4 @@
-﻿
-namespace MedVoll.Web.Services
+﻿namespace MedVoll.Web.Interfaces
 {
     public interface IBaseHttpService
     {

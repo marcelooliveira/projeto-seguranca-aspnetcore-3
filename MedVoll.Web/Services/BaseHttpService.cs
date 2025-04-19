@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using MedVoll.Web.Interfaces;
+using Microsoft.AspNetCore.Authentication;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
@@ -11,15 +12,13 @@ namespace MedVoll.Web.Services
     {
         protected readonly IConfiguration _configuration;
         protected readonly HttpClient _httpClient;
-        protected readonly ISessionHelper _sessionHelper;
         protected string _baseUri;
         protected HttpContext _httpContext;
 
-        public BaseHttpService(IConfiguration configuration, HttpClient httpClient, ISessionHelper sessionHelper)
+        public BaseHttpService(IConfiguration configuration, HttpClient httpClient)
         {
             _configuration = configuration;
             _httpClient = httpClient;
-            _sessionHelper = sessionHelper;
         }
 
         public abstract string Scope { get; }

@@ -1,4 +1,5 @@
 ﻿using MedVoll.Web.Dtos;
+using MedVoll.Web.Interfaces;
 using MedVoll.Web.Models;
 
 namespace MedVoll.Web.Services
@@ -24,9 +25,8 @@ namespace MedVoll.Web.Services
         public MedVollApiService(
             IConfiguration configuration
             , HttpClient httpClient
-            , ISessionHelper sessionHelper
             , ILogger<MedVollApiService> logger)
-            : base(configuration, httpClient, sessionHelper)
+            : base(configuration, httpClient)
         {
             _apiClient = httpClient;
             _baseUri = _configuration["MedVoll.WebApi.Url"];

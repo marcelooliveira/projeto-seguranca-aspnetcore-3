@@ -42,7 +42,6 @@ HttpClient httpClient = new HttpClient()
 };
 
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddTransient<ISessionHelper, SessionHelper>();
 builder.Services.AddTransient<IMedicoRepository, MedicoRepository>();
 builder.Services.AddTransient<IConsultaRepository, ConsultaRepository>();
 builder.Services.AddTransient<IMedicoService, MedicoService>();
