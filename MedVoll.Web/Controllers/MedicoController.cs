@@ -51,7 +51,7 @@ namespace MedVoll.Web.Controllers
             {
                 await _medVollApiService
                     .WithContext(HttpContext)
-                    .ExcluirMedico(dados.Id.Value);
+                    .ExcluirMedico(dados.Id);
                 return Redirect("/medicos");
             }
 

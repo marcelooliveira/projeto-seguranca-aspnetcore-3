@@ -45,7 +45,7 @@ namespace MedVoll.Web.Controllers
         {
             if (dados._method == "delete")
             {
-                await _medVollApiService.WithContext(HttpContext).ExcluirConsulta(dados.Id.Value);
+                await _medVollApiService.WithContext(HttpContext).ExcluirConsulta(dados.Id);
                 return Redirect("/consultas");
             }
 

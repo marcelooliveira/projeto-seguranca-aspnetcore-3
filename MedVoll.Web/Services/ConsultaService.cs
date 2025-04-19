@@ -39,7 +39,7 @@ namespace MedVoll.Web.Services
             }
             else
             {
-                var consulta = await _consultaRepository.FindByIdAsync(dados.Id.Value);
+                var consulta = await _consultaRepository.FindByIdAsync(dados.Id);
                 if (consulta == null) throw new RegraDeNegocioException("Consulta não encontrada.");
 
                 consulta.ModificarDados(medicoConsulta, dados);

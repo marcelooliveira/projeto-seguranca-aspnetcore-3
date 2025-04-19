@@ -42,7 +42,7 @@ namespace MedVoll.Web.Services
             }
             else
             {
-                var medico = await _repository.FindByIdAsync(dados.Id.Value);
+                var medico = await _repository.FindByIdAsync(dados.Id);
                 if (medico == null) throw new RegraDeNegocioException("Médico não encontrado.");
 
                 medico.AtualizarDados(dados);

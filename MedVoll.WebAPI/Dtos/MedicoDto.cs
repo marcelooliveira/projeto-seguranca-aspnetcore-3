@@ -20,7 +20,7 @@ namespace MedVoll.Web.Dtos
             Especialidade = medico.Especialidade;
         }
 
-        public long? Id { get; set; }
+        public long Id { get; set; }
         public string _method { get; set; }
         [Required(ErrorMessage = "Campo obrigatório"), MinLength(5, ErrorMessage = "Campo deve ter no mínimo 5 caracteres")] 
         public string Nome { get; set; }

@@ -20,7 +20,7 @@ namespace MedVoll.Web.Dtos
             Especialidade = medico.Especialidade;
         }
 
-        public long? Id { get; set; }
+        public long Id { get; set; }
         public string _method { get; set; }
         [Required(ErrorMessage = "Campo obrigatório"), MinLength(1)] // Vídeo 4.1 - Validando dados
         public string Nome { get; set; }

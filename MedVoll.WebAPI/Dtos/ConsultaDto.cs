@@ -38,7 +38,7 @@ namespace MedVoll.Web.Dtos
             Especialidade = consulta.Medico.Especialidade;
         }
 
-        public long? Id { get; set; }
+        public long Id { get; set; }
         public string _method { get; set; }
 
         [Required(ErrorMessage = "Campo obrigatório")] 
