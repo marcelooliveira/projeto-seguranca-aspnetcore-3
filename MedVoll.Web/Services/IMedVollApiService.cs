@@ -5,7 +5,6 @@ namespace MedVoll.Web.Services
 {
     public interface IMedVollApiService : IBaseHttpService
     {
-        string Scope { get; }
         IMedVollApiService WithContext(HttpContext context);
         Task<PaginatedList<ConsultaDto>> ListarConsultas(int? page);
         Task<FormularioConsultaDto> ObterFormularioConsulta(long? consultaId);

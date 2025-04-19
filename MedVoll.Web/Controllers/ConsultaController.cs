@@ -13,7 +13,6 @@ namespace MedVoll.Web.Controllers
         private const string PaginaCadastro = "Formulario";
 
         private readonly IMedVollApiService _medVollApiService;
-        //private readonly IMedicoService _medicoService;
 
         public ConsultaController(IMedVollApiService medVollApiService)
         : base()
@@ -25,7 +24,7 @@ namespace MedVoll.Web.Controllers
         [Route("{page?}")]
         public async Task<IActionResult> ListarAsync([FromQuery] int page = 1)
         {
-            var consultas = await _medVollApiService.WithContext(HttpContext).ListarConsultas(page);
+            PaginatedList<ConsultaDto> consultas = await _medVollApiService.WithContext(HttpContext).ListarConsultas(page);
             ViewBag.Consultas = consultas;
             ViewData["Url"] = "Consultas";
             return View(PaginaListagem, consultas);
@@ -52,8 +51,8 @@ namespace MedVoll.Web.Controllers
 
             if (!ModelState.IsValid)
             {
-                IEnumerable<MedicoDto> medicos = await _medVollApiService.WithContext(HttpContext).ListarMedicos(1);
-                ViewData["Medicos"] = medicos.ToList();
+                PaginatedList<MedicoDto> medicos = await _medVollApiService.WithContext(HttpContext).ListarMedicos(1);
+                ViewData["Medicos"] = medicos.Items;
                 return View(PaginaCadastro, dados);
             }
 

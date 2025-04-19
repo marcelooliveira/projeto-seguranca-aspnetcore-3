@@ -13,7 +13,6 @@ namespace MedVoll.Web.Controllers
     {
         private const string PaginaListagem = "Listagem";
         private const string PaginaCadastro = "Formulario";
-        private readonly IMedicoService _service;
         private readonly IMedVollApiService _medVollApiService;
 
         public MedicoController(IMedVollApiService medVollApiService)
@@ -58,10 +57,10 @@ namespace MedVoll.Web.Controllers
 
             if (!ModelState.IsValid)
             {
-                IEnumerable<MedicoDto> medicos = await _medVollApiService
+                PaginatedList<MedicoDto> medicos = await _medVollApiService
                     .WithContext(HttpContext)
                     .ListarMedicos(1);
-                ViewData["Medicos"] = medicos.ToList();
+                ViewData["Medicos"] = medicos.Items.ToList();
                 return View(PaginaCadastro, dados);
             }
 

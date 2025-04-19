@@ -3,6 +3,7 @@ using MedVoll.Web.Exceptions;
 using MedVoll.Web.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace MedVoll.Web.Controllers
 {
@@ -24,8 +25,8 @@ namespace MedVoll.Web.Controllers
         [HttpGet("listar")]
         public async Task<IActionResult> ListarAsync([FromQuery] int page = 1)
         {
-            var consultasAtivas = await _consultaservice.ListarAsync(page);        
-            return Ok(consultasAtivas);
+            PaginatedList<ConsultaDto> consultas = await _consultaservice.ListarAsync(page);
+            return Ok(consultas);
         }
 
         [HttpGet("formulario/{id?}")]

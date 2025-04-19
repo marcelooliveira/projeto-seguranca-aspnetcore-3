@@ -1,15 +1,30 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using NuGet.Packaging;
 
 namespace MedVoll.Web.Dtos
 {
-    public class PaginatedList<T> : List<T>, IPaginatedList
+    [Serializable]
+    public class PaginatedList<T> : IPaginatedList where T : class
     {
-        public int TotalItemCount { get; }
-        public int PageNumber { get; private set; }
-        public int PageSize { get; }
-        public int TotalPages { get; private set; }
+        [JsonProperty]
+        public IList<T> Items { get; set; } = [];
+        [JsonProperty]
+        public int TotalItemCount { get; set; }
+        [JsonProperty]
+        public int PageNumber { get; set; }
+        [JsonProperty]
+        public int PageSize { get; set; }
+        [JsonProperty]
+        public int TotalPages { get; set; }
+        [JsonProperty]
         public bool HasPreviousPage => PageNumber > 1;
+        [JsonProperty]
         public bool HasNextPage => PageNumber < TotalPages;
+
+        public PaginatedList()
+        {
+        }
 
         public PaginatedList(List<T> items, int totalItemCount, int pageNumber, int pageSize)
         {
@@ -18,7 +33,7 @@ namespace MedVoll.Web.Dtos
             PageSize = pageSize;
             TotalPages = (int)Math.Ceiling(totalItemCount / (double)pageSize);
 
-            AddRange(items);
+            Items.AddRange(items);
         }
 
         public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageNumber)
