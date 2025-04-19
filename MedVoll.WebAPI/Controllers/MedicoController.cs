@@ -48,8 +48,7 @@ namespace MedVoll.Web.Controllers
             }
             catch (RegraDeNegocioException ex)
             {
-               
-                return NotFound(new{dados,ex.Message});
+                return StatusCode(500, $"Erro: {ex.Message}");
             }
         }
 

@@ -5,15 +5,12 @@
     <section class="card">
         <h2 class="title">Listagem de médicos</h2>
 
-        @if (User.Claims.FirstOrDefault(c => c.Type == "Role")?.Value == "Admin")
-        {
-            <div class="table-controls">
-                <a href="@Url.Action("Formulario", "Medicos" )" class="btn btn-tertiary">
-                    <img src="~/assets/plus.png" alt="Ícone de adicionar" class="btn-icon">
-                    Novo Médico
-                </a>
-            </div>
-        }
+        <div class="table-controls">
+            <a href="@Url.Action("Formulario", "Medicos" )" class="btn btn-tertiary">
+                <img src="~/assets/plus.png" alt="Ícone de adicionar" class="btn-icon">
+                Novo Médico
+            </a>
+        </div>
 
         <table class="tabela">
             <thead>

@@ -1,10 +1,8 @@
 ﻿using MedVoll.Web.Dtos;
-using MedVoll.Web.Exceptions;
 using MedVoll.Web.Interfaces;
 using MedVoll.Web.Models;
 using MedVoll.Web.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedVoll.Web.Controllers
@@ -28,7 +26,9 @@ namespace MedVoll.Web.Controllers
         [Route("{page?}")]
         public async Task<IActionResult> ListarAsync([FromQuery] int page = 1)
         {
-            var medicos = await _medVollApiService.WithHttpContext(HttpContext).ListarMedicos(page);
+            var medicos = await _medVollApiService
+                .WithContext(HttpContext)
+                .ListarMedicos(page);
             ViewBag.Consultas = medicos;
             ViewData["Url"] = "Medicos";
             return View(PaginaListagem, medicos);
@@ -38,7 +38,9 @@ namespace MedVoll.Web.Controllers
         [Route("formulario/{id?}")]
         public async Task<IActionResult> ObterFormularioAsync(long? id = 0)
         {
-            MedicoDto medico = await _medVollApiService.WithHttpContext(HttpContext).ObterFormularioMedico(id);
+            MedicoDto medico = await _medVollApiService
+                .WithContext(HttpContext)
+                .ObterFormularioMedico(id);
             return View(PaginaCadastro, medico);
         }
 
@@ -48,23 +50,29 @@ namespace MedVoll.Web.Controllers
         {
             if (dados._method == "delete")
             {
-                await _medVollApiService.WithHttpContext(HttpContext).ExcluirMedico(dados.Id.Value);
+                await _medVollApiService
+                    .WithContext(HttpContext)
+                    .ExcluirMedico(dados.Id.Value);
                 return Redirect("/medicos");
             }
 
             if (!ModelState.IsValid)
             {
-                IEnumerable<MedicoDto> medicos = await _medVollApiService.WithHttpContext(HttpContext).ListarMedicos(1);
+                IEnumerable<MedicoDto> medicos = await _medVollApiService
+                    .WithContext(HttpContext)
+                    .ListarMedicos(1);
                 ViewData["Medicos"] = medicos.ToList();
                 return View(PaginaCadastro, dados);
             }
 
             try
             {
-                await _medVollApiService.WithHttpContext(HttpContext).CadastrarMedico(dados);
+                await _medVollApiService
+                    .WithContext(HttpContext)
+                    .CadastrarMedico(dados);
                 return Redirect("/medicos");
             }
-            catch (RegraDeNegocioException ex)
+            catch (Exception ex)
             {
                 ViewBag.Erro = ex.Message;
                 ViewBag.Dados = dados;
@@ -78,7 +86,9 @@ namespace MedVoll.Web.Controllers
         {
             if (Enum.TryParse(especialidade, out Especialidade especEnum))
             {
-                var medicos = await _medVollApiService.WithHttpContext(HttpContext).ListarMedicosPorEspecialidade(especEnum);
+                var medicos = await _medVollApiService
+                    .WithContext(HttpContext)
+                    .ListarMedicosPorEspecialidade(especEnum);
                 return Json(medicos);
             }
             return BadRequest("Especialidade inválida.");

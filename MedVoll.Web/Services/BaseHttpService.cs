@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using System.Net.Http.Headers;
+using Azure;
 
 namespace MedVoll.Web.Services
 {
@@ -84,9 +85,8 @@ namespace MedVoll.Web.Services
             HttpResponseMessage httpResponse = await httpVerbMethod(new Uri(new Uri(_baseUri), uri), stringContent);
             if (!httpResponse.IsSuccessStatusCode)
             {
-                var error = new { httpResponse.StatusCode, httpResponse.ReasonPhrase };
-                var errorJson = JsonConvert.SerializeObject(error);
-                throw new HttpRequestException(errorJson);
+                var errorContent = await httpResponse.Content.ReadAsStringAsync();
+                throw new HttpRequestException(errorContent);
             }
             var jsonOut = await httpResponse.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(jsonOut);
