@@ -22,17 +22,17 @@ namespace MedVoll.Web.Dtos
 
         public long Id { get; set; }
         public string _method { get; set; }
-        [Required(ErrorMessage = "Campo obrigatório"), MinLength(1)] // Vídeo 4.1 - Validando dados
+        [Required(ErrorMessage = "Campo obrigatório"), MinLength(1)]
         public string Nome { get; set; }
-        [Required(ErrorMessage = "Campo obrigatório"), EmailAddress] // Vídeo 4.1 - Validando dados
+        [Required(ErrorMessage = "Campo obrigatório"), EmailAddress]
         public string Email { get; set; }
         [Required(ErrorMessage = "Campo obrigatório"), StringLength(6, MinimumLength = 4,
-            ErrorMessage = "CRM deve ter de 4 a 6 digitos numéricos")] // Vídeo 4.1 - Validando dados
+            ErrorMessage = "CRM deve ter de 4 a 6 digitos numéricos")]
         public string Crm { get; set; }
         [Required(ErrorMessage = "Campo obrigatório"), RegularExpression(@"^(?:\d{8}|\d{9}|\d{4}-\d{4}|\d{5}-\d{4}|\(\d{2}\)\s*\d{4}-\d{4}|\(\d{2}\)\s*\d{5}-\d{4}|\(\d{2}\)\s*\d{9})$",
-            ErrorMessage = "Telefone inválido")] // Vídeo 4.1 - Validando dados
+            ErrorMessage = "Telefone inválido")]
         public string Telefone { get; set; }
-        [Required(ErrorMessage = "Campo obrigatório")] // Vídeo 4.1 - Validando dados
+        [Required(ErrorMessage = "Campo obrigatório")]
         public Especialidade Especialidade { get; set; }
     }
 }

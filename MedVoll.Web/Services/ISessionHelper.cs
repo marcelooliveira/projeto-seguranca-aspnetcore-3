@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace MedVoll.Web.Services
+﻿namespace MedVoll.Web.Services
 {
     public interface ISessionHelper
     {

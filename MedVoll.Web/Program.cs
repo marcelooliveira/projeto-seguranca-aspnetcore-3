@@ -4,12 +4,8 @@ using MedVoll.Web.Interfaces;
 using MedVoll.Web.Repositories;
 using MedVoll.Web.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
-using System.Net.Http;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.AspNetCore.Authentication;
+using System.IdentityModel.Tokens.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,21 +20,11 @@ builder.Services.AddControllersWithViews(options =>
 var connectionString = builder.Configuration.GetConnectionString("SqliteConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(x => x.UseSqlite(connectionString));
 
-//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-//    .AddRoles<IdentityRole>()
-//    .AddEntityFrameworkStores<ApplicationDbContext>();
-
-//builder.Services.AddIdentityCore<IdentityUser>()
-//    .AddRoles<IdentityRole>()
-//    .AddRoleManager<RoleManager<IdentityRole>>()
-//    .AddSignInManager<SignInManager<IdentityUser>>()
-//    .AddEntityFrameworkStores<ApplicationDbContext>();
-
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = "VollMedAuthCookie"; // Nome do cookie
-    //options.LoginPath = "/Account/Login"; // Redireciona para login se não autenticado
-    //options.LogoutPath = "/Account/Logout"; // Caminho para logout
+    options.LoginPath = "/Account/Login"; // Redireciona para login se não autenticado
+    options.LogoutPath = "/Account/Logout"; // Caminho para logout
     options.AccessDeniedPath = "/Account/AccessDenied"; // Caminho para acesso negado
     options.ExpireTimeSpan = TimeSpan.FromMinutes(5); // Tempo de expiração
     options.SlidingExpiration = true; // Renova o cookie automaticamente
@@ -67,10 +53,10 @@ builder.Services.AddSingleton(typeof(HttpClient), httpClient);
 
 builder.Services.AddSession(options =>
 {
-    //options.Cookie.HttpOnly = true; // Proteger cookie contra acesso via JavaScript
-    //options.Cookie.IsEssential = true; // Garantir que o cookie seja salvo mesmo sem consentimento do usuário (GDPR)
-    //options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Exigir HTTPS para cookies
-    //options.IdleTimeout = TimeSpan.FromMinutes(1); // Tempo de expiração da sessão
+    options.Cookie.HttpOnly = true; // Proteger cookie contra acesso via JavaScript
+    options.Cookie.IsEssential = true; // Garantir que o cookie seja salvo mesmo sem consentimento do usuário (GDPR)
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Exigir HTTPS para cookies
+    options.IdleTimeout = TimeSpan.FromMinutes(1); // Tempo de expiração da sessão
 });
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -134,18 +120,5 @@ app.MapControllerRoute(
 
 app.MapRazorPages()
    .WithStaticAssets();
-
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-//    try
-//    {
-//        await IdentitySeeder.SeedUsersAsync(services);
-//    }
-//    catch (Exception ex)
-//    {
-//        Console.WriteLine($"Erro ao executar o Seeder: {ex.Message}");
-//    }
-//}
 
 app.Run();

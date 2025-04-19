@@ -11,8 +11,8 @@ namespace MedVoll.Web.Data.Migrations
             // Populando a tabela Medicos
             migrationBuilder.InsertData(
                 table: "Medicos",
-                columns: new[] { "Nome", "Email", "Telefone", "Crm", "Especialidade" },
-                columnTypes: new[] { "string", "string", "string", "string", "int" }, 
+                columns: ["Nome", "Email", "Telefone", "Crm", "Especialidade"],
+                columnTypes: ["string", "string", "string", "string", "int"], 
                 values: new object[,]
                 {
                 { "Gregory House", "house@hospital.com", "(12)12345-6781", "123456", 6 }, // Diagnóstico
@@ -41,8 +41,8 @@ namespace MedVoll.Web.Data.Migrations
             // Populando a tabela Consultas com associações fictícias com a tabela Medicos
             migrationBuilder.InsertData(
                 table: "Consultas",
-                columns: new[] { "MedicoId", "Paciente", "Data" },
-                columnTypes: new[] { "int", "string", "DateTime" },
+                columns: ["MedicoId", "Paciente", "Data"],
+                columnTypes: ["int", "string", "DateTime"],
                 values: new object[,]
                 {
                 { 1, "12345678901", new DateTime(2024, 11, 10, 10, 0, 0) },

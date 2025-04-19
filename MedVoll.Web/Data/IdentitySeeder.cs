@@ -1,7 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Build.Framework;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
-using System.Data;
 using System.Security.Claims;
 
 namespace MedVoll.Web.Data

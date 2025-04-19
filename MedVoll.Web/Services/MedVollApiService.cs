@@ -20,7 +20,6 @@ namespace MedVoll.Web.Services
         }
 
         private readonly HttpClient _apiClient;
-        private readonly ILogger<MedVollApiService> _logger;
 
         public MedVollApiService(
             IConfiguration configuration
@@ -30,7 +29,6 @@ namespace MedVoll.Web.Services
             : base(configuration, httpClient, sessionHelper)
         {
             _apiClient = httpClient;
-            _logger = logger;
             _baseUri = _configuration["MedVoll.WebApi.Url"];
         }
 
