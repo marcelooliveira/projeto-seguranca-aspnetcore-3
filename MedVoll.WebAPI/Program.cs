@@ -21,7 +21,7 @@ builder.Services.AddTransient<IConsultaRepository, ConsultaRepository>();
 builder.Services.AddTransient<IMedicoService, MedicoService>();
 builder.Services.AddTransient<IConsultaService, ConsultaService>();
 
-builder.Services.ConfigureSwagger();
+//builder.Services.ConfigureSwagger();
 
 builder.Services.AddAuthentication()
     .AddJwtBearer(options =>

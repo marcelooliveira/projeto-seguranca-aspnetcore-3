@@ -3,6 +3,7 @@ using MedVoll.Web.Filters;
 using MedVoll.Web.Interfaces;
 using MedVoll.Web.Repositories;
 using MedVoll.Web.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.IdentityModel.Tokens.Jwt;
@@ -23,10 +24,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(x => x.UseSqlite(connectionS
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = "VollMedAuthCookie"; // Nome do cookie
-    options.LoginPath = "/Account/Login"; // Redireciona para login se não autenticado
-    options.LogoutPath = "/Account/Logout"; // Caminho para logout
-    options.AccessDeniedPath = "/Account/AccessDenied"; // Caminho para acesso negado
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(5); // Tempo de expiração
+    options.LoginPath = builder.Configuration["IdentityUrl"] + "/Account/Login"; // Redireciona para login se não autenticado
+    options.LogoutPath = builder.Configuration["IdentityUrl"] + "/Account/Logout"; // Caminho para logout
+    options.AccessDeniedPath = builder.Configuration["IdentityUrl"] + "/Account/AccessDenied"; // Caminho para acesso negado
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(1); // Tempo de expiração
     options.SlidingExpiration = true; // Renova o cookie automaticamente
 
     options.Cookie.HttpOnly = true; // Impede acesso via JavaScript
@@ -50,26 +51,16 @@ builder.Services.AddTransient<IMedVollApiService, MedVollApiService>();
 
 builder.Services.AddSingleton(typeof(HttpClient), httpClient);
 
-builder.Services.AddSession(options =>
-{
-    options.Cookie.HttpOnly = true; // Proteger cookie contra acesso via JavaScript
-    options.Cookie.IsEssential = true; // Garantir que o cookie seja salvo mesmo sem consentimento do usuário (GDPR)
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Exigir HTTPS para cookies
-    options.IdleTimeout = TimeSpan.FromMinutes(1); // Tempo de expiração da sessão
-});
-
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 builder.Services.AddRazorPages();
-
-const long ExpireInMinutes = 360;
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = "Cookies";
     options.DefaultChallengeScheme = "oidc";
 })
-    .AddCookie("Cookies", options => options.ExpireTimeSpan = TimeSpan.FromMinutes(ExpireInMinutes))
+    .AddCookie("Cookies")
     .AddOpenIdConnect("oidc", options =>
     {
         options.Authority = "https://localhost:5001";
@@ -92,8 +83,6 @@ builder.Services.AddAuthentication(options =>
 
 
 var app = builder.Build();
-
-app.UseSession();
 
 if (app.Environment.IsDevelopment())
 {
