@@ -1,10 +1,6 @@
-using MedVoll.Web.Data;
 using MedVoll.Web.Filters;
 using MedVoll.Web.Interfaces;
-using MedVoll.Web.Repositories;
 using MedVoll.Web.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -12,14 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<ExceptionHandlerFilter>();
 
-// Add services to the container.
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<ExceptionHandlerFilter>();
 });
-
-var connectionString = builder.Configuration.GetConnectionString("SqliteConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(x => x.UseSqlite(connectionString));
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -36,17 +28,13 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 
-var uri = new Uri(builder.Configuration["ApiUrl"]);
+var uri = new Uri(builder.Configuration["MedVoll.WebApi.Url"]);
 HttpClient httpClient = new HttpClient()
 {
     BaseAddress = uri
 };
 
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddTransient<IMedicoRepository, MedicoRepository>();
-builder.Services.AddTransient<IConsultaRepository, ConsultaRepository>();
-builder.Services.AddTransient<IMedicoService, MedicoService>();
-builder.Services.AddTransient<IConsultaService, ConsultaService>();
 builder.Services.AddTransient<IMedVollApiService, MedVollApiService>();
 
 builder.Services.AddSingleton(typeof(HttpClient), httpClient);
