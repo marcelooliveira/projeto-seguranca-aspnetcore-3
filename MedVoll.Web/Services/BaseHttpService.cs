@@ -23,14 +23,10 @@ namespace MedVoll.Web.Services
 
         public abstract string Scope { get; }
 
-        protected async Task<T> GetAuthenticatedAsync<T>(string uri, params object[] param)
-        {
-            await SetToken();
-            return await GetAsync<T>(uri, param);
-        }
-
         protected async Task<T> GetAsync<T>(string uri, params object[] param)
         {
+            await SetToken();
+
             string requestUri =
                 string.Format(new Uri(new Uri(_baseUri), uri).ToString(), param);
 
@@ -51,6 +47,8 @@ namespace MedVoll.Web.Services
 
         protected async Task DeleteAsync<T>(string uri, params object[] param)
         {
+            await SetToken();
+
             string requestUri =
                 string.Format(new Uri(new Uri(_baseUri), uri).ToString(), param);
 
@@ -64,10 +62,10 @@ namespace MedVoll.Web.Services
 
         private async Task<T> PutOrPostAsync<T>(string uri, object content, HttpVerbMethod httpVerbMethod)
         {
+            await SetToken();
+
             var jsonIn = JsonConvert.SerializeObject(content);
             var stringContent = new StringContent(jsonIn, Encoding.UTF8, "application/json");
-
-            await SetToken();
 
             HttpResponseMessage httpResponse = await httpVerbMethod(new Uri(new Uri(_baseUri), uri), stringContent);
             if (!httpResponse.IsSuccessStatusCode)
