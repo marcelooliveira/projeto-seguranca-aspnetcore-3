@@ -23,11 +23,6 @@ namespace MedVoll.Web.Services
 
         public abstract string Scope { get; }
 
-        protected async Task<T> GetAuthenticatedAsync<T>(string uri, params object[] param)
-        {
-            return await GetAsync<T>(uri, param);
-        }
-
         protected async Task<T> GetAsync<T>(string uri, params object[] param)
         {
             string requestUri =
@@ -42,13 +37,7 @@ namespace MedVoll.Web.Services
             return JsonConvert.DeserializeObject<T>(json);
         }
 
-        protected async Task<T> PostAsync<T>(string uri, object content)
-        {
-            HttpVerbMethod httpVerbMethod = new HttpVerbMethod(_httpClient.PostAsync);
-            return await PutOrPostAsync<T>(uri, content, httpVerbMethod);
-        }
-
-        protected async Task<T> PutAsync<T>(string uri, object content)
+        protected async Task<T> PutOrPostAsync<T>(string uri, object content)
         {
             HttpVerbMethod httpVerbMethod = new HttpVerbMethod(_httpClient.PutAsync);
             return await PutOrPostAsync<T>(uri, content, httpVerbMethod);
@@ -80,12 +69,6 @@ namespace MedVoll.Web.Services
             }
             var jsonOut = await httpResponse.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(jsonOut);
-        }
-
-        private async Task SetToken()
-        {
-            var accessToken = await _httpContext.GetTokenAsync("access_token");
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
     }
 }

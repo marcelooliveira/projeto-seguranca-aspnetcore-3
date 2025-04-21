@@ -1,6 +1,5 @@
 ﻿using MedVoll.Web.Dtos;
 using MedVoll.Web.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedVoll.Web.Controllers
@@ -57,7 +56,7 @@ namespace MedVoll.Web.Controllers
 
             try
             {
-                await _medVollApiService.WithContext(HttpContext).CadastrarConsulta(dados);
+                await _medVollApiService.WithContext(HttpContext).SalvarConsulta(dados);
                 return Redirect("/consultas");
             }
             catch (Exception ex)

@@ -41,19 +41,19 @@ namespace MedVoll.Web.Services
         public async Task<PaginatedList<ConsultaDto>> ListarConsultas(int? page)
         {
             var uri = $"{ApiUris.ListarConsultas}/?page={page}";
-            return await GetAuthenticatedAsync<PaginatedList<ConsultaDto>>(uri);
+            return await GetAsync<PaginatedList<ConsultaDto>>(uri);
         }
 
         public async Task<FormularioConsultaDto> ObterFormularioConsulta(long? id)
         {
             var uri = $"{ApiUris.ObterFormularioConsulta}/{id}";
-            return await GetAuthenticatedAsync<FormularioConsultaDto>(uri);
+            return await GetAsync<FormularioConsultaDto>(uri);
         }
 
-        public async Task<ConsultaDto> CadastrarConsulta(ConsultaDto input)
+        public async Task<ConsultaDto> SalvarConsulta(ConsultaDto input)
         {
             var uri = $"{ApiUris.SalvarConsulta}";
-            return await PutAsync<ConsultaDto>(uri, input);
+            return await PutOrPostAsync<ConsultaDto>(uri, input);
         }
 
         public async Task ExcluirConsulta(long consultaId)
@@ -66,19 +66,19 @@ namespace MedVoll.Web.Services
         public async Task<PaginatedList<MedicoDto>> ListarMedicos(int? page)
         {
             var uri = $"{ApiUris.ListarMedicos}/?page={page}";
-            return await GetAuthenticatedAsync<PaginatedList<MedicoDto>>(uri);
+            return await GetAsync<PaginatedList<MedicoDto>>(uri);
         }
 
         public async Task<MedicoDto> ObterFormularioMedico(long? id)
         {
             var uri = $"{ApiUris.ObterFormularioMedico}/{id}";
-            return await GetAuthenticatedAsync<MedicoDto>(uri);
+            return await GetAsync<MedicoDto>(uri);
         }
 
-        public async Task<MedicoDto> CadastrarMedico(MedicoDto input)
+        public async Task<MedicoDto> SalvarMedico(MedicoDto input)
         {
             var uri = $"{ApiUris.SalvarMedico}";
-            return await PutAsync<MedicoDto>(uri, input);
+            return await PutOrPostAsync<MedicoDto>(uri, input);
         }
 
         public async Task ExcluirMedico(long medicoId)
@@ -91,7 +91,7 @@ namespace MedVoll.Web.Services
         public async Task<IEnumerable<MedicoDto>> ListarMedicosPorEspecialidade(Especialidade especEnum)
         {
             var uri = $"{ApiUris.ListarMedicosPorEspecialidade}/{especEnum}";
-            return await GetAuthenticatedAsync<IEnumerable<MedicoDto>>(uri);
+            return await GetAsync<IEnumerable<MedicoDto>>(uri);
         }
 
         public override string Scope => "MedVoll.WebAPI";
