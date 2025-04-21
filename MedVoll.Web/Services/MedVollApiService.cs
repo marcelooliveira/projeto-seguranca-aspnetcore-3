@@ -20,15 +20,11 @@ namespace MedVoll.Web.Services
             public static string ListarMedicosPorEspecialidade = "/api/Medico/especialidade";
         }
 
-        private readonly HttpClient _apiClient;
-
         public MedVollApiService(
             IConfiguration configuration
-            , HttpClient httpClient
-            , ILogger<MedVollApiService> logger)
+            , HttpClient httpClient)
             : base(configuration, httpClient)
         {
-            _apiClient = httpClient;
             _baseUri = _configuration["MedVoll.WebApi.Url"];
         }
 
@@ -59,7 +55,6 @@ namespace MedVoll.Web.Services
         public async Task ExcluirConsulta(long consultaId)
         {
             var uri = $"{ApiUris.ExcluirConsulta}";
-            var consulta = new ConsultaDto { Id = consultaId };
             await DeleteAsync<ConsultaDto>(uri, consultaId);
         }
 
@@ -84,7 +79,6 @@ namespace MedVoll.Web.Services
         public async Task ExcluirMedico(long medicoId)
         {
             var uri = $"{ApiUris.ExcluirMedico}";
-            var medico = new MedicoDto { Id = medicoId };
             await DeleteAsync<MedicoDto>(uri, medicoId);
         }
 
