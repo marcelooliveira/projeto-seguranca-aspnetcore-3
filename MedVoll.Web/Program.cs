@@ -13,25 +13,9 @@ builder.Services.AddControllersWithViews(options =>
     options.Filters.Add<ExceptionHandlerFilter>();
 });
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Cookie.Name = "VollMedAuthCookie"; // Nome do cookie
-    options.LoginPath = builder.Configuration["IdentityUrl"] + "/Account/Login"; // Redireciona para login se não autenticado
-    options.LogoutPath = builder.Configuration["IdentityUrl"] + "/Account/Logout"; // Caminho para logout
-    options.AccessDeniedPath = builder.Configuration["IdentityUrl"] + "/Account/AccessDenied"; // Caminho para acesso negado
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(1); // Tempo de expiração
-    options.SlidingExpiration = true; // Renova o cookie automaticamente
-
-    options.Cookie.HttpOnly = true; // Impede acesso via JavaScript
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Exige HTTPS
-    options.Cookie.SameSite = SameSiteMode.Strict; // Restringe envio de cookies entre sites
-});
-
-
-var uri = new Uri(builder.Configuration["MedVoll.WebApi.Url"]);
 HttpClient httpClient = new HttpClient()
 {
-    BaseAddress = uri
+    BaseAddress = new Uri(builder.Configuration["MedVoll.WebApi.Url"])
 };
 
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -43,15 +27,26 @@ JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 builder.Services.AddRazorPages();
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultScheme = "Cookies";
-    options.DefaultChallengeScheme = "oidc";
-})
-    .AddCookie("Cookies")
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultScheme = "Cookies";
+        options.DefaultChallengeScheme = "oidc";
+    })
+    .AddCookie("Cookies", options =>
+    {
+        options.Cookie.Name = "VollMedAuthCookie";
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+        options.SlidingExpiration = true;
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Strict;
+    })
     .AddOpenIdConnect("oidc", options =>
     {
-        options.Authority = "https://localhost:5001";
+        options.Authority = builder.Configuration["MedVoll.Identity.Url"];
 
         options.ClientId = "MedVoll.Web";
         options.ClientSecret = "secret";

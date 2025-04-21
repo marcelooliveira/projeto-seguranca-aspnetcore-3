@@ -2,9 +2,7 @@ using MedVoll.Web.Data;
 using MedVoll.Web.Interfaces;
 using MedVoll.Web.Repositories;
 using MedVoll.Web.Services;
-using MedVoll.WebAPI.Extensions;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,8 +18,6 @@ builder.Services.AddTransient<IMedicoRepository, MedicoRepository>();
 builder.Services.AddTransient<IConsultaRepository, ConsultaRepository>();
 builder.Services.AddTransient<IMedicoService, MedicoService>();
 builder.Services.AddTransient<IConsultaService, ConsultaService>();
-
-//builder.Services.ConfigureSwagger();
 
 builder.Services.AddAuthentication()
     .AddJwtBearer(options =>
@@ -48,9 +44,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.MapGet("identity", (ClaimsPrincipal user) => user.Claims.Select(c => new { c.Type, c.Value }))
-    .RequireAuthorization("ApiScope");
 
 app.MapControllers();
 
