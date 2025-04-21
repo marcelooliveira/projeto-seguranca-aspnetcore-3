@@ -3,9 +3,8 @@ using MedVoll.Web.Exceptions;
 using MedVoll.Web.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
-namespace MedVoll.Web.Controllers
+namespace MedVoll.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -14,12 +13,11 @@ namespace MedVoll.Web.Controllers
     {
         private readonly IConsultaService _consultaservice;
         private readonly IMedicoService _medicoService;
-     
 
         public ConsultaController(IConsultaService consultaService, IMedicoService medicoService)
         {
             _consultaservice = consultaService;
-            _medicoService = medicoService;            
+            _medicoService = medicoService;
         }
 
         [HttpGet("listar")]

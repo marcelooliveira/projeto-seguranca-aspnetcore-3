@@ -10,30 +10,27 @@ namespace MedVoll.Identity;
 public static class Config
 {
     public static IEnumerable<IdentityResource> IdentityResources =>
-        new IdentityResource[]
-        {
+        [
             new IdentityResources.OpenId(),
             new IdentityResources.Profile(),
             new IdentityResource()
             {
                 Name = "verification",
-                UserClaims = new List<string>
-                {
+                UserClaims =
+                [
                     JwtClaimTypes.Email,
                     JwtClaimTypes.EmailVerified
-                }
+                ]
             }
-        };
+        ];
 
     public static IEnumerable<ApiScope> ApiScopes =>
-        new ApiScope[]
-        {
+        [
             new ApiScope(name: "MedVoll.WebAPI", displayName: "MedVoll.WebAPI")
-        };
+        ];
 
     public static IEnumerable<Client> Clients =>
-        new Client[]
-        {
+        [
             new Client
             {
                 ClientId = "MedVoll.Web",
@@ -49,12 +46,12 @@ public static class Config
 
                 AllowOfflineAccess = true,
 
-                AllowedScopes = new List<string>
-                {
+                AllowedScopes =
+                [
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     "MedVoll.WebAPI"
-                }
+                ]
             }
-        };
+        ];
 }
