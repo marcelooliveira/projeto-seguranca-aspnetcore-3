@@ -25,7 +25,6 @@ namespace MedVoll.Web.Services
 
         protected async Task<T> GetAuthenticatedAsync<T>(string uri, params object[] param)
         {
-            await SetToken();
             return await GetAsync<T>(uri, param);
         }
 
@@ -72,8 +71,6 @@ namespace MedVoll.Web.Services
         {
             var jsonIn = JsonConvert.SerializeObject(content);
             var stringContent = new StringContent(jsonIn, Encoding.UTF8, "application/json");
-
-            await SetToken();
 
             HttpResponseMessage httpResponse = await httpVerbMethod(new Uri(new Uri(_baseUri), uri), stringContent);
             if (!httpResponse.IsSuccessStatusCode)

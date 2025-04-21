@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MedVoll.Web.Controllers
 {
-    [Authorize]
     [Route("consultas")]
     public class ConsultaController : BaseController
     {

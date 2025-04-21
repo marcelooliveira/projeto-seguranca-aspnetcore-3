@@ -1,15 +1,12 @@
 ﻿using MedVoll.Web.Dtos;
 using MedVoll.Web.Exceptions;
 using MedVoll.Web.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace MedVoll.Web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "ApiScope")]
     public class ConsultaController : ControllerBase
     {
         private readonly IConsultaService _consultaservice;

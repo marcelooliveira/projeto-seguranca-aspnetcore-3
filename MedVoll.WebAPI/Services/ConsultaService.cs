@@ -32,7 +32,7 @@ namespace MedVoll.Web.Services
                 throw new RegraDeNegocioException("Medico não encontrado.");
             }
 
-            if (dados.Id == null)
+            if (dados.Id == 0)
             {
                 var consulta = new Consulta(medicoConsulta, dados);
                 await _consultaRepository.SaveAsync(consulta);

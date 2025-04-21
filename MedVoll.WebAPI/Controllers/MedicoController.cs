@@ -2,17 +2,14 @@
 using MedVoll.Web.Exceptions;
 using MedVoll.Web.Interfaces;
 using MedVoll.Web.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedVoll.Web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "ApiScope")]
     public class MedicoController : ControllerBase
     {
-        private const string PaginaCadastro = "Formulario";
         private readonly IMedicoService _service;
         public MedicoController(IMedicoService service)            
         {
