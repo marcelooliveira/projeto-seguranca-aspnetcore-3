@@ -43,13 +43,7 @@ namespace MedVoll.Web.Services
             return JsonConvert.DeserializeObject<T>(json);
         }
 
-        protected async Task<T> PostAsync<T>(string uri, object content)
-        {
-            HttpVerbMethod httpVerbMethod = new HttpVerbMethod(_httpClient.PostAsync);
-            return await PutOrPostAsync<T>(uri, content, httpVerbMethod);
-        }
-
-        protected async Task<T> PutAsync<T>(string uri, object content)
+        protected async Task<T> PutOrPostAsync<T>(string uri, object content)
         {
             HttpVerbMethod httpVerbMethod = new HttpVerbMethod(_httpClient.PutAsync);
             return await PutOrPostAsync<T>(uri, content, httpVerbMethod);

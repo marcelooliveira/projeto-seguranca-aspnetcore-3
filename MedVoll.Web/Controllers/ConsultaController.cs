@@ -58,7 +58,7 @@ namespace MedVoll.Web.Controllers
 
             try
             {
-                await _medVollApiService.WithContext(HttpContext).CadastrarConsulta(dados);
+                await _medVollApiService.WithContext(HttpContext).SalvarConsulta(dados);
                 return Redirect("/consultas");
             }
             catch (Exception ex)

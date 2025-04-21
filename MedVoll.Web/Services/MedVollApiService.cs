@@ -50,10 +50,10 @@ namespace MedVoll.Web.Services
             return await GetAuthenticatedAsync<FormularioConsultaDto>(uri);
         }
 
-        public async Task<ConsultaDto> CadastrarConsulta(ConsultaDto input)
+        public async Task<ConsultaDto> SalvarConsulta(ConsultaDto input)
         {
             var uri = $"{ApiUris.SalvarConsulta}";
-            return await PutAsync<ConsultaDto>(uri, input);
+            return await PutOrPostAsync<ConsultaDto>(uri, input);
         }
 
         public async Task ExcluirConsulta(long consultaId)
@@ -75,10 +75,10 @@ namespace MedVoll.Web.Services
             return await GetAuthenticatedAsync<MedicoDto>(uri);
         }
 
-        public async Task<MedicoDto> CadastrarMedico(MedicoDto input)
+        public async Task<MedicoDto> SalvarMedico(MedicoDto input)
         {
             var uri = $"{ApiUris.SalvarMedico}";
-            return await PutAsync<MedicoDto>(uri, input);
+            return await PutOrPostAsync<MedicoDto>(uri, input);
         }
 
         public async Task ExcluirMedico(long medicoId)
