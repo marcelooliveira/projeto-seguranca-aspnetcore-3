@@ -14,7 +14,7 @@ builder.Services.AddControllersWithViews(options =>
     options.Filters.Add<ExceptionHandlerFilter>();
 });
 
-var uri = new Uri(builder.Configuration["ApiUrl"]);
+var uri = new Uri(builder.Configuration["MedVoll.WebApi.Url"]);
 HttpClient httpClient = new HttpClient()
 {
     BaseAddress = uri
