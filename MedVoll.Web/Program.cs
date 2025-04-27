@@ -8,20 +8,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<ExceptionHandlerFilter>();
 
-// Add services to the container.
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<ExceptionHandlerFilter>();
 });
 
-var uri = new Uri(builder.Configuration["MedVoll.WebApi.Url"]);
 HttpClient httpClient = new HttpClient()
 {
-    BaseAddress = uri
+    BaseAddress = new Uri(builder.Configuration["MedVoll.WebApi.Url"])
 };
 
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddTransient<IMedVollApiService, MedVollApiService>();
+//builder.Services.AddTransient<IMedVollApiService, MedVollApiService>();
 
 builder.Services.AddSingleton(typeof(HttpClient), httpClient);
 
